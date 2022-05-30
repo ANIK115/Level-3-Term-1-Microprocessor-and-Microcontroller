@@ -1,0 +1,79 @@
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+VOWEL DB 0DH, 0AH, 'THE LETTER IS VOWEL $'
+CONSONANT DB 0DH, 0AH, 'THE LETTER IS CONSONANT $'
+OTHER DB 0DH, 0AH, 'This is not a letter! $'
+X DB ?
+
+
+.CODE
+
+MAIN PROC
+
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV AH,1
+    INT 21H
+    
+    CMP AL,'A'
+    JE RESULT_VOWEL
+    CMP AL,'E'
+    JE RESULT_VOWEL
+    CMP AL,'I'
+    JE RESULT_VOWEL
+    CMP AL,'O'
+    JE RESULT_VOWEL
+    CMP AL,'U'
+    JE RESULT_VOWEL
+    CMP AL,'a'
+    JE RESULT_VOWEL
+    CMP AL,'e'
+    JE RESULT_VOWEL
+    CMP AL,'i'
+    JE RESULT_VOWEL
+    CMP AL,'o'
+    JE RESULT_VOWEL
+    CMP AL,'u'
+    JE RESULT_VOWEL
+    
+    CMP AL,'A'
+    JL OTHERS
+    CMP AL,'Z'
+    JG SMALL_LETTERS
+    JMP RESULT_CONSONANT
+    
+SMALL_LETTERS:
+    CMP AL,'a'
+    JL  OTHERS
+    CMP AL, 'z'
+    JG OTHERS
+
+
+      
+RESULT_CONSONANT:
+    MOV AH,9
+    LEA DX, CONSONANT
+    INT 21H
+    JMP END_MAIN
+    
+RESULT_VOWEL:
+    MOV AH,9
+    LEA DX, VOWEL
+    INT 21H
+    JMP END_MAIN
+    
+OTHERS:
+    MOV AH,9
+    LEA DX, OTHER
+    INT 21H 
+
+END_MAIN:
+
+    MOV AH, 4CH
+    INT 21H
+
+    MAIN ENDP
+END MAIN

@@ -1,0 +1,134 @@
+.MODEL SMALL 
+.STACK 100H 
+.DATA
+
+A DB ?
+B DB ?
+C DB ?
+D DB ?
+E DB ?
+FIRST DB 0DH, 0AH, 'FIRST QUADRANT $'
+SECOND DB 0DH, 0AH, 'SECOND QUADRANT $'
+THIRD DB 0DH, 0AH, 'THIRD QUADRANT $'
+FOURTH DB 0DH, 0AH, 'FOURTH QUADRANT $'
+XAXIS DB 0DH, 0AH, 'X AXIS $'
+YAXIS DB 0DH, 0AH, 'Y AXIS $'
+ZERO DB 0DH, 0AH, 'ZERO POINT $'
+
+CR EQU 0DH
+LF EQU 0AH
+
+.CODE 
+MAIN PROC 
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV AH,1
+    INT 21H
+    MOV A,AL
+    
+    INT 21H
+    MOV B,AL
+    SUB B,'0'
+    
+    INT 21H
+    MOV C,AL
+    
+    INT 21H
+    MOV D,AL
+    
+    INT 21H
+    MOV E,AL
+    SUB E,'0'
+    
+    CMP A,'-'
+    JE NEG_B
+CMP_D:
+    CMP D, '-'
+    JE NEG_E
+    JMP FIRST_QUAD
+
+NEG_B:
+    NEG B
+    JMP CMP_D 
+
+NEG_E:
+    NEG E
+    
+FIRST_QUAD:
+    CMP B,0
+    JE CHECK_ZERO
+    JL SECOND_QUAD
+    CMP E,0
+    JE CHECK_ZERO
+    JG DISPLAY_FIRST
+    JL DISPLAY_FOURTH
+    
+SECOND_QUAD:
+    CMP E,0
+    JG DISPLAY_SECOND
+    JL DISPLAY_THIRD
+    JE CHECK_ZERO
+
+CHECK_ZERO:
+    CMP B,0
+    JNE CHECK_X
+    CMP E,0
+    JNE DISPLAY_Y
+    JMP DISPLAY_ZERO
+    
+CHECK_X:
+    CMP E,0
+    JE DISPLAY_X
+
+DISPLAY_FIRST:
+    MOV AH,9
+    LEA DX, FIRST
+    INT 21H
+    JMP END_MAIN    
+    
+    
+DISPLAY_SECOND:
+    MOV AH,9
+    LEA DX, SECOND
+    INT 21H
+    JMP END_MAIN      
+
+DISPLAY_THIRD:
+    MOV AH,9
+    LEA DX, THIRD
+    INT 21H
+    JMP END_MAIN       
+    
+DISPLAY_FOURTH:
+    MOV AH,9
+    LEA DX, FOURTH
+    INT 21H
+    JMP END_MAIN      
+
+DISPLAY_ZERO:
+    MOV AH,9
+    LEA DX, ZERO
+    INT 21H
+    JMP END_MAIN
+    
+DISPLAY_X:
+    MOV AH,9
+    LEA DX, XAXIS
+    INT 21H
+    JMP END_MAIN        
+DISPLAY_Y:
+    MOV AH,9
+    LEA DX, YAXIS
+    INT 21H
+    JMP END_MAIN
+          
+END_MAIN:      
+
+	; interrupt to exit
+    MOV AH, 4CH
+    INT 21H
+    
+  
+MAIN ENDP 
+END MAIN 

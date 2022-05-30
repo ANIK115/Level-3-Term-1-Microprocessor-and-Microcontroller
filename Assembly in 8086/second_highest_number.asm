@@ -40,10 +40,14 @@ BL_GREATER_THAN_CL: ;all numbers are not equal
     MOV CL,X        ;comparing BL and CL and storing the higher one to BL and lower one to CL
 IF:
     CMP AL,BL
-    JL SECOND_AL    ;if AL < BL then AL is the second highest number
+    JL CHECK_AL_CL    ;if AL < BL then AL or CL is the second highest number. go to check_AL_CL
     JE MOV_CL       ;else if AL = BL then CL is the second highest number as previously all numbers are not equal and BL > CL
     MOV AL,BL       ;else BL < AL, so BL is second highest. move it to AL
     JMP SECOND_AL
+    
+CHECK_AL_CL:
+    CMP AL,CL
+    JGE SECOND_AL
 
 MOV_CL:
     MOV AL,CL       ;storing the 2nd highest number to AL from CL
@@ -53,6 +57,9 @@ SECOND_AL:          ; then 2nd highest number is stored in AL
     MOV AH,2
     INT 21H
     JMP END_MAIN
+    
+
+    
 
 ALL_EQUAL:
 
